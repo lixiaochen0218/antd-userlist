@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Table, Pagination, Popconfirm } from 'antd';
+import { Table, Pagination,Divider, Popconfirm, Modal, Button } from 'antd';
 import { routerRedux } from 'dva/router';
 import styles from './UserList.css';
 // import { PAGE_SIZE } from '../../constants';
+import UserListEdit from './UserListEdit';
 
-const PAGE_SIZE = 3;
+const PAGE_SIZE = 4;
+const Modalvisible = false;
+
 function UserList({ dispatch, list: dataSource, loading, total, page: current }) {
   function deleteHandler(id) {
     dispatch({
@@ -41,11 +44,12 @@ function UserList({ dispatch, list: dataSource, loading, total, page: current })
     {
       title: 'Operation',
       key: 'operation',
-      render: (text, { id }) => (
+      render: (text, user) => (
         <span className={styles.operation}>
-          <a href="">Edit</a>
-          <Popconfirm title="Confirm to delete?" onConfirm={deleteHandler.bind(null, id)}>
-            <a href="">Delete</a>
+          <UserListEdit data={user}/>
+          <Divider type="vertical" />
+          <Popconfirm title="Confirm to delete?" onConfirm={deleteHandler.bind(null, user.id)}>
+          <Button type="primary">Delete</Button>
           </Popconfirm>
         </span>
       ),
@@ -54,6 +58,7 @@ function UserList({ dispatch, list: dataSource, loading, total, page: current })
 
   return (
     <div className={styles.normal}>
+      <UserListEdit data={{id: total + 1}}/>
       <div>
         <Table
           columns={columns}
