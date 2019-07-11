@@ -45,6 +45,7 @@ class UserListEdit extends React.Component {
             type: 'userlist/add',
             payload: values,
           });
+          this.props.form.resetFields();
         }
         this.handleCancel();
       }
@@ -140,7 +141,6 @@ class UserListEdit extends React.Component {
                 <AutoComplete
                   dataSource={websiteOptions}
                   onChange={this.handleWebsiteChange}
-                  placeholder="website"
                 >
                   <Input />
                 </AutoComplete>,
