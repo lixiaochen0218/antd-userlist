@@ -8,7 +8,7 @@ export function remove(id) {
   let ls = localStorage.getItem('userlist');
   let userlist = JSON.parse(ls);
   userlist = userlist.filter(user => user.id !== id);
-  console.log(userlist);
+//   console.log(userlist);
   if (userlist.length == 0) {
     localStorage.removeItem('userlist');
   } else {
@@ -25,7 +25,7 @@ export function add(data) {
   } 
   data.id = Math.random() * 1000 
   userlist.push(data);
-  console.log(userlist)
+//   console.log(userlist)
   localStorage.setItem('userlist', JSON.stringify(userlist));
   return true;
 }

@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Table, Pagination,Divider, Popconfirm, Modal, Button } from 'antd';
+import { Table, Pagination,Divider, Popconfirm, Modal, Button, AutoComplete, Input, Icon, Badge, Tag } from 'antd';
 import { routerRedux } from 'dva/router';
 import styles from './UserList.css';
 // import { PAGE_SIZE } from '../../constants';
@@ -26,11 +26,24 @@ function UserList({ dispatch, list: dataSource, loading, total, page: current })
     }));
   }
 
+  function handleSearch(query) {
+    if (query.length >=3 || query.length == 0) {
+      let page = 1;
+      dispatch({
+        type: 'userlist/fetch',
+        payload: { page , query },
+      });
+    }
+  }
+
   const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      defaultSortOrder: 'descend',
+      sortDirections: ['descend', 'ascend'],
+      sorter: (a, b) => a.name.length - b.name.length,
     },
     {
       title: 'Email',
@@ -58,9 +71,46 @@ function UserList({ dispatch, list: dataSource, loading, total, page: current })
     },
   ];
 
+  function expandedRowRender(row){
+    if (row.id > 10) return false
+    const columns = [
+      { title: 'Username', dataIndex: 'username', key: 'username' },
+      { title: 'Phone', dataIndex: 'phone', key: 'phone' },
+      {
+        title: 'Status',
+        key: 'state',
+        render: () => (
+          <span>
+            <Badge status="success" />
+            Finished
+          </span>
+        ),
+      },
+      { title: 'Address', dataIndex: 'address', key: 'address' },
+    ];
+
+    const data = [];
+    data.push({
+      username : row.username,
+      phone: row.phone,
+      key: row.id,
+      address: `${row.address.suite}  ${row.address.street} ${row.address.city}`
+    })
+    return <Table columns={columns} dataSource={data} pagination={false} />;
+  };
+
   return (
     <div className={styles.normal}>
-      <UserListEdit data={{}}/>
+      <div style={{ display: '-webkit-inline-box' }}>
+        <UserListEdit data={{}}/>
+        <AutoComplete
+          style={{ width: 200, 'marginLeft': '50px'}}
+          onSearch={handleSearch}
+          placeholder="Search here"
+        >
+            <Input suffix={<Icon type="search" className="certain-category-icon" />} />
+        </ AutoComplete>
+      </div>
       <div>
         <Table
           columns={columns}
@@ -68,6 +118,7 @@ function UserList({ dispatch, list: dataSource, loading, total, page: current })
           loading={loading}
           rowKey={record => record.id}
           pagination={false}
+          expandedRowRender={expandedRowRender}
         />
         <Pagination
           className="ant-table-pagination"

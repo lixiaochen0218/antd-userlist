@@ -9,23 +9,35 @@ export default {
     page: null,
   },
   reducers: {
-    get(state, { payload: { data: list, total, page } }) {
+    get(state, { payload: { data: list, total, page, query } }) {
+      console.log(list);
       let lsuserlist = JSON.parse(localStorage.getItem("userlist"));
       if (lsuserlist) {
         list = list.concat(lsuserlist);
+      }
+      // const query = '.org';
+      if (query) {
+        list = list.filter(user => {
+          if (user.name.includes(query)||user.email.includes(query)||user.website.includes(query)){
+            return true;
+          } else {
+            return false;
+          }
+        })
       }
       return { ...state, list, total, page };
     },
   },
   effects: {
-    *fetch({ payload: { page = 1 } }, { call, put }) {
-      const data = yield call(userListServices.fetch, { page });
+    *fetch({ payload: { page = 1 , query } }, { call, put }) {
+      const data = yield call(userListServices.fetch, { page, query });
       yield put({
         type: 'get',
         payload: {
           data,
           total: 10,
           page: parseInt(page, 1),
+          query,
         },
       });
     },

@@ -88,6 +88,11 @@ export default {
       authority: ['admin', 'user'],
       routes: [
         {
+          name: 'step-form',
+          path: '/form/step-form',
+          component: './form/step-form',
+        },
+        {
           path: '/',
           name: 'welcome',
           icon: 'smile',
