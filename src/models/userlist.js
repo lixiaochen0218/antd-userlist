@@ -1,4 +1,5 @@
-import * as userListService from '../services/userlist';
+// import * as userListServices from '../services/userlist';
+import * as userListServices from '../services/userlist2';
 
 export default {
   namespace: 'userlist',
@@ -8,38 +9,40 @@ export default {
     page: null,
   },
   reducers: {
-    save(state, { payload: { data: list, total, page } }) {
+    get(state, { payload: { data: list, total, page } }) {
+      let lsuserlist = JSON.parse(localStorage.getItem("userlist"));
+      if (lsuserlist) {
+        list = list.concat(lsuserlist);
+      }
       return { ...state, list, total, page };
     },
   },
   effects: {
     *fetch({ payload: { page = 1 } }, { call, put }) {
-      const data = yield call(userListService.fetch, { page });
+      const data = yield call(userListServices.fetch, { page });
       yield put({
-        type: 'save',
+        type: 'get',
         payload: {
           data,
           total: 10,
-          page: parseInt(page, 10),
+          page: parseInt(page, 1),
         },
       });
     },
-    *add({ payload: data }, { call, put }) {
-      console.log("addd");
-      console.log(data);
+    *add({ payload: data }, { call, put, select }) {
       yield call(userListServices.add, data);
       const page = yield select(state => state.userlist.page);
-      yield put({ type: 'fetch', payload: { page } });
+      yield put({ type: 'fetch', payload: 1 });
     },
     *remove({ payload: id }, { call, put, select }) {
       yield call(userListServices.remove, id);
       const page = yield select(state => state.userlist.page);
-      yield put({ type: 'fetch', payload: { page } });
+      yield put({ type: 'fetch', payload: 1 });
     },
     *patch({ payload: { id, values } }, { call, put, select }) {
-      yield call(usersService.patch, id, values);
-      const page = yield select(state => state.users.page);
-      yield put({ type: 'fetch', payload: { page } });
+      yield call(userListServices.patch, id, values);
+      const page = yield select(state => state.userlist.page);
+      yield put({ type: 'fetch', payload: 1 });
     },
   },
   subscriptions: {

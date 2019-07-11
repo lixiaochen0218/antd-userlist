@@ -10,6 +10,8 @@ const PAGE_SIZE = 4;
 const Modalvisible = false;
 
 function UserList({ dispatch, list: dataSource, loading, total, page: current }) {
+  console.log(dataSource);
+  
   function deleteHandler(id) {
     dispatch({
       type: 'userlist/remove',
@@ -29,7 +31,6 @@ function UserList({ dispatch, list: dataSource, loading, total, page: current })
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      render: text => <a href="">{text}</a>,
     },
     {
       title: 'Email',
@@ -40,6 +41,7 @@ function UserList({ dispatch, list: dataSource, loading, total, page: current })
       title: 'Website',
       dataIndex: 'website',
       key: 'website',
+      render: text => <a href={text}>{text}</a>,
     },
     {
       title: 'Operation',
@@ -49,7 +51,7 @@ function UserList({ dispatch, list: dataSource, loading, total, page: current })
           <UserListEdit data={user}/>
           <Divider type="vertical" />
           <Popconfirm title="Confirm to delete?" onConfirm={deleteHandler.bind(null, user.id)}>
-          <Button type="primary">Delete</Button>
+            <Button type="primary" disabled={user.id <= 10}>Delete</Button>
           </Popconfirm>
         </span>
       ),
@@ -58,7 +60,7 @@ function UserList({ dispatch, list: dataSource, loading, total, page: current })
 
   return (
     <div className={styles.normal}>
-      <UserListEdit data={{id: total + 1}}/>
+      <UserListEdit data={{}}/>
       <div>
         <Table
           columns={columns}

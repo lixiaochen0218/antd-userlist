@@ -1,4 +1,5 @@
-import { Modal, Button, Form, Input, Tooltip, Icon, AutoComplete } from 'antd';
+import { Modal, Button, Form, Input, Tooltip, Icon,Divider, AutoComplete } from 'antd';
+import { connect } from 'dva';
 
 const AutoCompleteOption = AutoComplete.Option;
 const { createFormField } = Form;
@@ -33,11 +34,19 @@ class UserListEdit extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+        let id = this.props.data.id;
+        if (this.props.data.name) {
+          dispatch({
+            type: 'userlist/patch',
+            payload: { id, values},
+          });
+        } else {
+          dispatch({
+            type: 'userlist/add',
+            payload: values,
+          });
+        }
         this.handleCancel();
-        dispatch({
-          type: 'userlist/add',
-          payload: values,
-        });
       }
     });
   };
@@ -90,7 +99,7 @@ class UserListEdit extends React.Component {
           {this.props.data.name ? "Edit" : "New User"}
         </Button>
         <Modal
-          title={this.props.data.name ? `Edit User ID: ${this.props.data.id}` : `New User ID: ${this.props.data.id}`}
+          title={this.props.data.name ? `Edit User ID: ${this.props.data.id}` : `New User`}
           visible={this.state.visible}
           onCancel={this.handleCancel}
           footer={null}
@@ -141,7 +150,8 @@ class UserListEdit extends React.Component {
               <Button key="back" onClick={this.handleCancel}>
                 Cancel
               </Button>
-              <Button type="primary" htmlType="submit">
+              <Divider type="vertical" />
+              <Button type="primary" htmlType="submit" disabled={this.props.data.id <= 10}>
                 {this.props.data.name ? "Save" : "Create"}
               </Button>
             </Form.Item>
@@ -154,4 +164,4 @@ class UserListEdit extends React.Component {
 
 const WrappedUserListEditForm = Form.create({ name: 'useredit'})(UserListEdit);
 
-export default WrappedUserListEditForm;
+export default connect()(WrappedUserListEditForm);
